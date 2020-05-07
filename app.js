@@ -1,9 +1,10 @@
-const express = require('express');
-const bodyParser = require('body-parser');
-const cors = require('cors');
-const helmet = require('helmet');
-const morgan = require('morgan');
-require('dotenv').config()
+const express = require("express");
+const mongoose = require("mongoose");
+const bodyParser = require("body-parser");
+const cors = require("cors");
+const helmet = require("helmet");
+const morgan = require("morgan");
+require("dotenv").config();
 
 // defining the Express app
 const app = express();
@@ -18,16 +19,31 @@ app.use(bodyParser.json());
 app.use(cors());
 
 // adding morgan to log HTTP requests
-app.use(morgan('dev'));
+app.use(morgan("dev"));
 
 // routes
-const HomeRoute = require('./api/routes/HomeRoute');
+const HomeRoute = require("./api/routes/HomeRoute");
+const PostRoute = require("./api/routes/PostRoute");
+const UserRoute = require("./api/routes/UserRoute");
 
-app.use('/', HomeRoute);
+app.use("/", HomeRoute);
+app.use("/api/v1/posts", PostRoute);
+app.use("/api/v1/user", UserRoute);
+
+//Database connection
+
+mongoose.connect(
+  "mongodb://localhost:27017/blog",
+  {useNewUrlParser: true, useUnifiedTopology: true},
+  (err) => {
+    console.log("Error:", err);
+  }
+);
+
+// starting the server
 
 const port = process.env.PORT || 500;
 
-// starting the server
 app.listen(port, () => {
   console.log(`listening on port ${port}`);
 });
