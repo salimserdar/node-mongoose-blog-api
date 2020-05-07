@@ -31,25 +31,27 @@ module.exports = {
             })
         }
     },
-    create: (req, res) => {
+    create: async (req, res) => {
 
         const { username, password, eMail } = req.body;
 
-        bcrypt.hash(password, 10).then((hash) => {
+        try {
+            const hash = await bcrypt.hash(password, 10);
+
             const user = new User({
                 username,
                 password: hash,
                 eMail,
             });
-        
-            const promise = user.save();
-            promise.then((userData) => {
-                res.status(201).json(userData)
-            }).catch((err) => {
-                res.status(404).json(err);
-            });
-        });
 
+            const userData = await user.save();
+
+            res.status(201).json(userData)
+
+        } catch (error) {
+            res.status(404).json(err);
+        }
+      
     }
 }
 
